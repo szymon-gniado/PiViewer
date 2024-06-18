@@ -34,7 +34,6 @@ Created by Hu Ge <gehuchina@gmail.com>
 # ----------------------------------------------------------------------
 
 import openbabel as ob
-import pybel
 import numpy as np
 
 # Define vecAngle for the degree between two vectors.

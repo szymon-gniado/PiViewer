@@ -34,10 +34,10 @@ Created by Hu Ge <gehuchina@gmail.com>
 # ----------------------------------------------------------------------
 
 from pymol import cmd
-from Tkinter import *
+from tkinter import *
 import tkFileDialog  # not included in TKinter standard
-import openbabel as ob
-import pybel
+from openbabel import openbabel as ob
+from openbabel import pybel
 import numpy as np
 import os
 
@@ -57,24 +57,24 @@ def vecAngle(vec1, vec2):
 
 # The main PiPi viewer function
 def PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
-    # Get ligand residue and print its name.
+    # Get ligand residue and print(its name.
     ligAtomList = []
     ligAtomIdList = []
-    mol = pybel.readfile('pdb', pdb_file).next()
-    print "A total of %s residues" % mol.OBMol.NumResidues()
+    mol = next(pybel.readfile('pdb', pdb_file))
+    print("A total of %s residues" % mol.OBMol.NumResidues())
     lig = None
     for res in ob.OBResidueIter(mol.OBMol):
-        # print res.GetName()
+        # print(res.GetName())
         if res.GetName() == lig_name:
             lig = res
-            print "Ligand residue name is: ", lig.GetName()
+            print("Ligand residue name is: ", lig.GetName())
             break
     if not lig:
-        print "No ligand residue %s found, please confirm." % lig_name
+        print("No ligand residue %s found, please confirm." % lig_name)
         return 0
     else:
         for atom in ob.OBResidueAtomIter(lig):
-            # print atom.GetIdx()
+            # print(atom.GetIdx())
             ligAtomList.append(atom)
             ligAtomIdList.append(atom.GetIdx())
 
@@ -83,7 +83,7 @@ def PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
     for ring in mol.sssr:
         ring.ring_id = i
         i += 1
-        # print ring.ring_id
+        # print(ring.ring_id)
 
     # Determine which rings are from ligand.
     ligRingList = []
@@ -97,19 +97,19 @@ def PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
                 if ring not in ligRingList:
                     ligRingList.append(ring)
                     ligRingIdList.append(ring.ring_id)
-                    print "ligand ring_ID: ", ring.ring_id,
+                    print("ligand ring_ID: ", ring.ring_id,)
                     if ring.IsAromatic():
-                        print "Aromatic"
+                        print("Aromatic")
                         ligAroRingList.append(ring)
                     else:
-                        print "Saturated"
+                        print("Saturated")
     for ring in mol.sssr:
         if ring.ring_id not in ligRingIdList:
             recRingList.append(ring)
             if ring.IsAromatic():
                 recAroRingList.append(ring)
-    print "\nReceptor has ", len(recRingList), " rings,",
-    print " has ", len(recAroRingList), " aromatic rings."
+    print("\nReceptor has ", len(recRingList), " rings,",)
+    print(" has ", len(recAroRingList), " aromatic rings.")
 
     # Find and show the rings
     ligRingCenter = ob.vector3()
@@ -145,10 +145,10 @@ def PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape):
                 psObjectList.append(objectName2)
                 # pair=[coord1,coord2]
                 pair = [objectName1, objectName2]
-                # print "%.4f,%.4f,%.4f" % (pair[1][0],pair[1][1],pair[1][2])
+                # print("%.4f,%.4f,%.4f" % (pair[1][0],pair[1][1],pair[1][2]))
                 pairList.append(pair)
                 cmd.distance('dist-' + objectName1 + '-' + objectName2, pair[0], pair[1])
-                print objectName1, objectName2, " angle is : %.2f" % angle
+                print(objectName1, objectName2, " angle is : %.2f" % angle)
 
 
 # Define the dialog for parameters
@@ -189,8 +189,8 @@ def setParamDialog(app):
             filetypes=[("PDB(Protein Data Bank files", "*.pdb"), ("PDB(Protein Data Bank files", "*.ent"),
                        ('All files', '*')], title='Please select the target PDB file')
         pdb_file = str(os.path.normpath(pdb_file))
-        print lig_name, centroid_distance, dih_parallel, dih_tshape
-        print pdb_file
+        print(lig_name, centroid_distance, dih_parallel, dih_tshape)
+        print(pdb_file)
         PiPi(pdb_file, lig_name, centroid_distance, dih_parallel, dih_tshape)
         top.destroy()
 

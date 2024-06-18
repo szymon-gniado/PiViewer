@@ -34,7 +34,6 @@ Created by Hu Ge <gehuchina@gmail.com>
 # ----------------------------------------------------------------------
 
 import openbabel as ob
-import pybel
 import numpy as np
 
 # Define vecAngle for the degree between two vectors.
@@ -61,24 +60,24 @@ def find_PiPi(pdb_file, lig_name, centroid_distance=5.0, dih_parallel=25, dih_ts
     :param dih_tshape: Min dihedral (T-shaped)
     :return: number of Pi-Pi interactions found
     """
-    # Get ligand residue and print its name.
+    # Get ligand residue and print(its name.
     ligAtomList = []
     ligAtomIdList = []
     mol = pybel.readfile('pdb', pdb_file).next()
-    if verbose: print "A total of %s residues" % mol.OBMol.NumResidues()
+    if verbose: print("A total of %s residues" % mol.OBMol.NumResidues())
     lig = None
     for res in ob.OBResidueIter(mol.OBMol):
-        # print res.GetName()
+        # print(res.GetName())
         if res.GetName() == lig_name:
             lig = res
-            if verbose: print "Ligand residue name is:", lig.GetName()
+            if verbose: print("Ligand residue name is:", lig.GetName())
             break
     if not lig:
-        if verbose: print "No ligand residue %s found, please confirm." % lig_name
+        if verbose: print("No ligand residue %s found, please confirm." % lig_name)
         return -1
     else:
         for atom in ob.OBResidueAtomIter(lig):
-            # print atom.GetIdx()
+            # print(atom.GetIdx())
             ligAtomList.append(atom)
             ligAtomIdList.append(atom.GetIdx())
 
@@ -87,7 +86,7 @@ def find_PiPi(pdb_file, lig_name, centroid_distance=5.0, dih_parallel=25, dih_ts
     for ring in mol.sssr:
         ring.ring_id = i
         i += 1
-        # print ring.ring_id
+        # print(ring.ring_id)
 
     # Determine which rings are from ligand.
     ligRingList = []
@@ -101,19 +100,19 @@ def find_PiPi(pdb_file, lig_name, centroid_distance=5.0, dih_parallel=25, dih_ts
                 if ring not in ligRingList:
                     ligRingList.append(ring)
                     ligRingIdList.append(ring.ring_id)
-                    if verbose: print "ligand ring_ID: ", ring.ring_id,
+                    if verbose: print("ligand ring_ID: ", ring.ring_id,)
                     if ring.IsAromatic():
-                        if verbose: print "aromatic"
+                        if verbose: print("aromatic")
                         ligAroRingList.append(ring)
                     else:
-                        if verbose: print "saturated"
+                        if verbose: print("saturated")
     for ring in mol.sssr:
         if ring.ring_id not in ligRingIdList:
             recRingList.append(ring)
             if ring.IsAromatic():
                 recAroRingList.append(ring)
-    if verbose: print "\nReceptor has ", len(recRingList), " rings,",
-    if verbose: print " has ", len(recAroRingList), " aromatic rings."
+    if verbose: print("\nReceptor has ", len(recRingList), " rings,",)
+    if verbose: print(" has ", len(recAroRingList), " aromatic rings.")
 
     # Find and show the rings
     ligRingCenter = ob.vector3()
@@ -135,8 +134,8 @@ def find_PiPi(pdb_file, lig_name, centroid_distance=5.0, dih_parallel=25, dih_ts
             angle = vecAngle(ligNorm1, recNorm1)
             if (dist < centroid_distance and (angle < dih_parallel or angle > dih_tshape)):  # the criteria
                 count += 1
-                if verbose: print "Pi-Pi ring pairs: %3s,%3s  Angle(deg.): %5.2f  Distance(A): %.2f" % (recRing.ring_id, ligRing.ring_id, angle, dist)
-    if verbose: print "Total Pi-Pi interactions:", count
+                if verbose: print("Pi-Pi ring pairs: %3s,%3s  Angle(deg.): %5.2f  Distance(A): %.2f" % (recRing.ring_id, ligRing.ring_id, angle, dist))
+    if verbose: print("Total Pi-Pi interactions:", count)
     return count
 
 
